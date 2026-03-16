@@ -1,7 +1,6 @@
 import React, { useState } from 'react'
 import { usePlayer } from '../context/PlayerContext'
 import TrackList from './TrackList'
-import styles from './PlaylistView.module.css'
 
 export default function PlaylistView() {
   const {
@@ -32,34 +31,39 @@ export default function PlaylistView() {
   }
 
   return (
-    <div className={styles.wrap}>
-      <div className={styles.side}>
-        <header className={styles.sideHeader}>
-          <h2 className={styles.sideTitle}>Playlists</h2>
+    <div className="flex min-h-0 overflow-hidden">
+      <div className="w-60 shrink-0 border-r border-border flex flex-col bg-bg-panel">
+        <header className="flex items-center justify-between py-4 px-4 pb-3">
+          <h2 className="text-[0.85rem] font-semibold text-text-muted uppercase tracking-wider">
+            Playlists
+          </h2>
           <button
             type="button"
-            className={styles.addBtn}
+            className="w-7 h-7 flex items-center justify-center text-lg text-text-muted rounded-app-sm hover:bg-bg-hover hover:text-accent transition-colors"
             onClick={() => setShowCreate(true)}
             title="New playlist"
           >
             +
           </button>
         </header>
-        <ul className={styles.list}>
+        <ul className="overflow-auto px-2 pb-4 list-none">
           {playlists.map((p) => (
-            <li key={p.id} className={styles.listItem}>
+            <li key={p.id} className="flex items-center gap-1 mb-0.5 group">
               <button
                 type="button"
-                className={styles.listBtn}
-                data-active={selectedId === p.id}
+                className={`flex-1 flex items-center justify-between py-2.5 px-3 text-left rounded-app-sm text-[0.95rem] transition-colors ${
+                  selectedId === p.id
+                    ? 'bg-accent-dim text-accent font-semibold'
+                    : 'text-text-muted hover:bg-bg-hover hover:text-[#e8eaed]'
+                }`}
                 onClick={() => setSelectedId(p.id)}
               >
-                <span className={styles.listName}>{p.name}</span>
-                <span className={styles.listCount}>{p.trackIds.length}</span>
+                <span className="truncate">{p.name}</span>
+                <span className="text-[0.8rem] opacity-80 ml-2">{p.trackIds.length}</span>
               </button>
               <button
                 type="button"
-                className={styles.deleteBtn}
+                className="w-7 h-7 flex items-center justify-center text-lg text-text-muted rounded-app-sm opacity-0 group-hover:opacity-100 hover:bg-danger-dim hover:text-danger transition-all"
                 onClick={() => {
                   if (selectedId === p.id) setSelectedId(playlists.find((x) => x.id !== p.id)?.id || null)
                   deletePlaylist(p.id)
@@ -73,15 +77,15 @@ export default function PlaylistView() {
         </ul>
       </div>
 
-      <div className={styles.main}>
+      <div className="flex-1 flex flex-col min-w-0 overflow-hidden">
         {selected ? (
           <>
-            <header className={styles.header}>
-              <h1 className={styles.title}>{selected.name}</h1>
+            <header className="flex items-center justify-between py-5 px-6 pb-4 border-b border-border shrink-0">
+              <h1 className="text-2xl font-bold text-[#e8eaed]">{selected.name}</h1>
               {tracks.length > 0 && (
                 <button
                   type="button"
-                  className={styles.btnSecondary}
+                  className="py-2.5 px-[18px] bg-bg-elevated text-[#e8eaed] font-medium text-[0.9rem] rounded-app-sm border border-border hover:bg-bg-hover transition-colors"
                   onClick={() => playQueue(tracks, 0)}
                 >
                   Play all
@@ -96,7 +100,7 @@ export default function PlaylistView() {
               extraActions={(track) => (
                 <button
                   type="button"
-                  className={styles.removeBtn}
+                  className="py-1 px-2.5 text-[0.8rem] text-text-muted rounded-app-sm hover:text-danger hover:bg-danger-dim transition-colors"
                   onClick={(e) => {
                     e.stopPropagation()
                     removeFromPlaylist(selected.id, track.id)
@@ -109,7 +113,7 @@ export default function PlaylistView() {
             />
           </>
         ) : (
-          <div className={styles.empty}>
+          <div className="flex-1 flex items-center justify-center text-text-muted text-[0.95rem]">
             {playlists.length === 0
               ? 'Create a playlist using the + button.'
               : 'Select a playlist.'}
@@ -118,24 +122,38 @@ export default function PlaylistView() {
       </div>
 
       {showCreate && (
-        <div className={styles.modal} onClick={() => setShowCreate(false)}>
-          <div className={styles.modalContent} onClick={(e) => e.stopPropagation()}>
-            <h2>New playlist</h2>
+        <div
+          className="fixed inset-0 bg-black/60 flex items-center justify-center z-[200]"
+          onClick={() => setShowCreate(false)}
+        >
+          <div
+            className="bg-bg-panel border border-border rounded-app p-6 w-full max-w-[360px] shadow-panel"
+            onClick={(e) => e.stopPropagation()}
+          >
+            <h2 className="mb-5 text-xl">New playlist</h2>
             <form onSubmit={handleCreate}>
-              <label>
+              <label className="block mb-3.5 text-[0.85rem] text-text-muted">
                 Name
                 <input
+                  className="block w-full mt-1.5 py-2.5 px-3 bg-bg-elevated border border-border rounded-app-sm text-[#e8eaed] text-[0.95rem] focus:outline-none focus:border-accent"
                   value={newName}
                   onChange={(e) => setNewName(e.target.value)}
                   placeholder="Playlist name"
                   autoFocus
                 />
               </label>
-              <div className={styles.modalButtons}>
-                <button type="button" className={styles.btnSecondary} onClick={() => setShowCreate(false)}>
+              <div className="flex gap-2.5 justify-end mt-5">
+                <button
+                  type="button"
+                  className="py-2.5 px-[18px] bg-bg-elevated text-[#e8eaed] font-medium rounded-app-sm border border-border hover:bg-bg-hover transition-colors"
+                  onClick={() => setShowCreate(false)}
+                >
                   Cancel
                 </button>
-                <button type="submit" className={styles.btn}>
+                <button
+                  type="submit"
+                  className="py-2.5 px-[18px] bg-accent text-bg-deep font-semibold rounded-app-sm hover:bg-accent-hover transition-colors"
+                >
                   Create
                 </button>
               </div>

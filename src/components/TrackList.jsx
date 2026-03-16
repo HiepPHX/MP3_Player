@@ -1,6 +1,5 @@
 import React from 'react'
 import { usePlayer } from '../context/PlayerContext'
-import styles from './TrackList.module.css'
 
 function formatDuration(seconds) {
   if (!Number.isFinite(seconds) || seconds < 0) return '0:00'
@@ -24,55 +23,76 @@ export default function TrackList({ tracks, currentTrackId, onPlay, showFavorite
 
   if (!tracks || tracks.length === 0) {
     return (
-      <div className={styles.empty}>
+      <div className="py-12 px-6 text-center text-text-muted text-[0.95rem] overflow-auto flex-1 min-h-0">
         No tracks here. Add songs to your library or playlist.
       </div>
     )
   }
 
   return (
-    <div className={styles.wrap}>
-      <table className={styles.table}>
+    <div className="overflow-auto flex-1 min-h-0">
+      <table className="w-full border-collapse text-[0.9rem]">
         <thead>
           <tr>
-            <th className={styles.colIndex}>#</th>
-            <th className={styles.colTitle}>Title</th>
-            <th className={styles.colArtist}>Artist</th>
-            <th className={styles.colDuration}>Duration</th>
-            {showFavorite && <th className={styles.colAction} />}
-            {extraActions && <th className={styles.colAction} />}
+            <th className="text-left py-2.5 px-4 font-semibold text-text-muted text-xs uppercase tracking-wider border-b border-border w-12 text-center align-middle">
+              #
+            </th>
+            <th className="text-left py-2.5 px-4 font-semibold text-text-muted text-xs uppercase tracking-wider border-b border-border min-w-[160px]">
+              Title
+            </th>
+            <th className="text-left py-2.5 px-4 font-semibold text-text-muted text-xs uppercase tracking-wider border-b border-border min-w-[120px]">
+              Artist
+            </th>
+            <th className="text-left py-2.5 px-4 font-semibold text-text-muted text-xs uppercase tracking-wider border-b border-border w-16 tabular-nums">
+              Duration
+            </th>
+            {showFavorite && (
+              <th className="text-left py-2.5 px-4 font-semibold text-text-muted text-xs uppercase tracking-wider border-b border-border w-12 text-center align-middle" />
+            )}
+            {extraActions && (
+              <th className="text-left py-2.5 px-4 font-semibold text-text-muted text-xs uppercase tracking-wider border-b border-border w-12 text-center align-middle" />
+            )}
           </tr>
         </thead>
         <tbody>
           {tracks.map((track, index) => (
             <tr
               key={track.id}
-              className={styles.row}
-              data-current={isCurrent(track.id)}
+              className={`cursor-pointer transition-colors duration-150 ${
+                isCurrent(track.id)
+                  ? 'bg-accent-dim text-accent'
+                  : 'hover:bg-bg-hover'
+              }`}
               onClick={() => handleRowClick(track, index)}
             >
-              <td className={styles.colIndex}>
+              <td className="py-3 px-4 border-b border-border w-12 text-center align-middle">
                 {isCurrent(track.id) ? (
-                  <span className={styles.playingIcon}>♪</span>
+                  <span className="text-accent text-base">♪</span>
                 ) : (
-                  <span className={styles.index}>{index + 1}</span>
+                  <span className="text-text-muted tabular-nums">{index + 1}</span>
                 )}
               </td>
-              <td className={styles.colTitle}>
-                <span className={styles.title}>{track.title}</span>
+              <td className="py-3 px-4 border-b border-border min-w-[160px]">
+                <span className="font-medium">{track.title}</span>
               </td>
-              <td className={styles.colArtist}>
-                <span className={styles.artist}>{track.artist}</span>
+              <td className="py-3 px-4 border-b border-border min-w-[120px]">
+                <span className={isCurrent(track.id) ? 'text-inherit' : 'text-text-muted'}>
+                  {track.artist}
+                </span>
               </td>
-              <td className={styles.colDuration}>
+              <td className={`py-3 px-4 border-b border-border w-16 tabular-nums ${isCurrent(track.id) ? 'text-inherit' : 'text-text-muted'}`}>
                 {formatDuration(track.duration)}
               </td>
               {showFavorite && (
-                <td className={styles.colAction} onClick={(e) => e.stopPropagation()}>
+                <td
+                  className="py-3 px-4 border-b border-border w-12 text-center align-middle"
+                  onClick={(e) => e.stopPropagation()}
+                >
                   <button
                     type="button"
-                    className={styles.favBtn}
-                    data-active={isFavorite(track.id)}
+                    className={`p-1.5 text-base rounded-app-sm hover:scale-110 transition-all ${
+                      isFavorite(track.id) ? 'text-danger' : 'text-text-muted hover:text-danger'
+                    }`}
                     onClick={() => toggleFavorite(track.id)}
                     title={isFavorite(track.id) ? 'Remove from favorites' : 'Add to favorites'}
                   >
@@ -81,7 +101,10 @@ export default function TrackList({ tracks, currentTrackId, onPlay, showFavorite
                 </td>
               )}
               {extraActions && (
-                <td className={styles.colAction} onClick={(e) => e.stopPropagation()}>
+                <td
+                  className="py-3 px-4 border-b border-border w-12 text-center align-middle"
+                  onClick={(e) => e.stopPropagation()}
+                >
                   {extraActions(track)}
                 </td>
               )}
