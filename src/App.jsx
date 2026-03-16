@@ -1,10 +1,6 @@
 import React, { useState } from 'react'
 import { PlayerProvider, usePlayer } from './context/PlayerContext'
 import Sidebar from './components/Sidebar'
-import PlayerBar from './components/PlayerBar'
-import LibraryView from './components/LibraryView'
-import FavoritesView from './components/FavoritesView'
-import PlaylistView from './components/PlaylistView'
 
 function AppContent() {
   const [view, setView] = useState('library')
