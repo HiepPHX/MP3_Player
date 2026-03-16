@@ -1,6 +1,5 @@
 import React, { useState } from 'react'
 import { usePlayer } from '../context/PlayerContext'
-import styles from './PlayerBar.module.css'
 
 function formatTime(seconds) {
   if (!Number.isFinite(seconds) || seconds < 0) return '0:00'
@@ -32,7 +31,6 @@ export default function PlayerBar() {
   } = usePlayer()
 
   const [showSpeed, setShowSpeed] = useState(false)
-  const progress = duration > 0 ? (currentTime / duration) * 100 : 0
 
   const cycleRepeat = () => {
     if (isRepeating === false) setIsRepeating('all')
@@ -42,50 +40,55 @@ export default function PlayerBar() {
 
   if (!currentTrack) {
     return (
-      <footer className={styles.bar}>
-        <div className={styles.empty}>Select a track to play</div>
+      <footer className="fixed bottom-0 left-0 right-0 h-[88px] bg-bg-panel border-t border-border grid grid-cols-[1fr_minmax(400px,2fr)_1fr] items-center gap-6 px-6 z-[100] shadow-panel">
+        <div className="col-span-full text-center text-text-muted text-[0.95rem]">
+          Select a track to play
+        </div>
       </footer>
     )
   }
 
   return (
-    <footer className={styles.bar}>
-      <div className={styles.nowPlaying}>
-        <div className={styles.artwork} />
-        <div className={styles.trackInfo}>
-          <span className={styles.title}>{currentTrack.title}</span>
-          <span className={styles.artist}>{currentTrack.artist}</span>
+    <footer className="fixed bottom-0 left-0 right-0 h-[88px] bg-bg-panel border-t border-border grid grid-cols-[1fr_minmax(400px,2fr)_1fr] items-center gap-6 px-6 z-[100] shadow-panel md:grid-cols-2 md:grid-rows-[auto_auto] md:h-auto md:p-3 md:gap-3">
+      <div className="flex items-center gap-3 min-w-0">
+        <div className="w-[52px] h-[52px] rounded-app-sm bg-gradient-to-br from-accent-dim to-bg-elevated shrink-0" />
+        <div className="min-w-0 flex flex-col gap-0.5">
+          <span className="font-semibold text-[0.95rem] truncate">{currentTrack.title}</span>
+          <span className="text-[0.8rem] text-text-muted truncate">{currentTrack.artist}</span>
         </div>
       </div>
 
-      <div className={styles.controls}>
-        <div className={styles.transport}>
+      <div className="flex flex-col items-center gap-2 min-w-0 md:col-span-full md:w-full">
+        <div className="flex items-center gap-1">
           <button
             type="button"
-            className={styles.iconBtn}
+            className={`w-10 h-10 flex items-center justify-center rounded-app-sm transition-colors duration-150 ${
+              isShuffled ? 'text-accent' : 'text-text-muted hover:bg-bg-hover hover:text-[#e8eaed]'
+            }`}
             onClick={() => setIsShuffled(!isShuffled)}
             title={isShuffled ? 'Shuffle on' : 'Shuffle off'}
-            data-active={isShuffled}
           >
             <ShuffleIcon />
           </button>
-          <button type="button" className={styles.iconBtn} onClick={previous} title="Previous">
+          <button type="button" className="w-10 h-10 flex items-center justify-center text-text-muted rounded-app-sm hover:bg-bg-hover hover:text-[#e8eaed] transition-colors duration-150" onClick={previous} title="Previous">
             <PreviousIcon />
           </button>
           <button
             type="button"
-            className={styles.playBtn}
+            className="w-11 h-11 mx-2 flex items-center justify-center bg-accent text-bg-deep rounded-full hover:bg-accent-hover hover:scale-105 transition-all duration-150"
             onClick={togglePlay}
             title={isPlaying ? 'Pause' : 'Play'}
           >
             {isPlaying ? <PauseIcon /> : <PlayIcon />}
           </button>
-          <button type="button" className={styles.iconBtn} onClick={next} title="Next">
+          <button type="button" className="w-10 h-10 flex items-center justify-center text-text-muted rounded-app-sm hover:bg-bg-hover hover:text-[#e8eaed] transition-colors duration-150" onClick={next} title="Next">
             <NextIcon />
           </button>
           <button
             type="button"
-            className={styles.iconBtn}
+            className={`w-10 h-10 flex items-center justify-center rounded-app-sm transition-colors duration-150 relative ${
+              isRepeating !== false ? 'text-accent' : 'text-text-muted hover:bg-bg-hover hover:text-[#e8eaed]'
+            }`}
             onClick={cycleRepeat}
             title={
               isRepeating === 'one'
@@ -94,48 +97,51 @@ export default function PlayerBar() {
                   ? 'Repeat all'
                   : 'Repeat off'
             }
-            data-active={isRepeating !== false}
-            data-one={isRepeating === 'one'}
           >
-            <span className={styles.repeatWrap}>
+            <span className="relative flex items-center justify-center">
               <RepeatIcon />
-              {isRepeating === 'one' && <span className={styles.repeatOne}>1</span>}
+              {isRepeating === 'one' && (
+                <span className="absolute -bottom-0.5 -right-1 text-[9px] font-bold tabular-nums">1</span>
+              )}
             </span>
           </button>
         </div>
 
-        <div className={styles.progressWrap}>
-          <span className={styles.time}>{formatTime(currentTime)}</span>
+        <div className="flex items-center gap-3 w-full max-w-[480px]">
+          <span className="text-xs tabular-nums text-text-muted min-w-[2.5em]">{formatTime(currentTime)}</span>
           <input
             type="range"
-            className={styles.progress}
+            className="flex-1 h-1.5"
             min={0}
             max={duration || 100}
             value={currentTime}
             onChange={(e) => seek(parseFloat(e.target.value))}
           />
-          <span className={styles.time}>{formatTime(duration)}</span>
+          <span className="text-xs tabular-nums text-text-muted min-w-[2.5em]">{formatTime(duration)}</span>
         </div>
       </div>
 
-      <div className={styles.right}>
-        <div className={styles.speedWrap}>
+      <div className="flex items-center justify-end gap-4 md:col-start-2 md:row-start-1">
+        <div className="relative">
           <button
             type="button"
-            className={styles.speedBtn}
+            className="text-[0.8rem] font-semibold py-1.5 px-2.5 rounded-app-sm bg-bg-elevated text-text-muted min-w-12 hover:bg-bg-hover hover:text-[#e8eaed] transition-colors"
             onClick={() => setShowSpeed(!showSpeed)}
             title="Playback speed"
           >
             {playbackRate}x
           </button>
           {showSpeed && (
-            <div className={styles.speedDropdown}>
+            <div className="absolute bottom-full right-0 mb-2 bg-bg-elevated border border-border rounded-app-sm p-1 min-w-20 shadow-panel">
               {SPEED_OPTIONS.map((r) => (
                 <button
                   key={r}
                   type="button"
-                  className={styles.speedOption}
-                  data-active={r === playbackRate}
+                  className={`block w-full py-2 px-3 text-center text-[0.85rem] rounded-md transition-colors ${
+                    r === playbackRate
+                      ? 'bg-accent-dim text-accent font-semibold'
+                      : 'hover:bg-bg-hover'
+                  }`}
                   onClick={() => {
                     setRate(r)
                     setShowSpeed(false)
@@ -147,11 +153,11 @@ export default function PlayerBar() {
             </div>
           )}
         </div>
-        <div className={styles.volumeWrap}>
+        <div className="flex items-center gap-2 w-32 text-text-muted">
           <VolumeIcon />
           <input
             type="range"
-            className={styles.volume}
+            className="flex-1 h-1.5 volume-slider"
             min={0}
             max={1}
             step={0.01}
